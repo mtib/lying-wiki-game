@@ -39,7 +39,7 @@ pub async fn random_article(
         "https://en.wikipedia.org/api/rest_v1/page/mobile-html/{}",
         urlencoding::encode(&title)
     );
-    let html = state
+    let raw_html = state
         .http
         .get(&html_url)
         .send()
@@ -48,6 +48,10 @@ pub async fn random_article(
         .text()
         .await
         .unwrap_or_default();
+
+    // PCS sets display:none on non-lead sections; scripts that would un-hide them
+    // don't run in our sandboxed iframe, so strip it here.
+    let html = raw_html.replace(" style=\"display: none;\"", "");
 
     Ok(Json(WikiArticle { title, url, extract, html }))
 }

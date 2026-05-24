@@ -6,7 +6,8 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-  const data = await res.json()
+  const text = await res.text()
+  const data = text ? JSON.parse(text) : {}
   if (!res.ok) throw new Error(data.error ?? 'Request failed')
   return data as T
 }
