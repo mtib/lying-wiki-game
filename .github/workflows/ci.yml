@@ -65,6 +65,9 @@ jobs:
           npm ci
           npm run build
 
+      - name: Copy frontend dist into Docker context
+        run: cp -r frontend/dist backend/static
+
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
