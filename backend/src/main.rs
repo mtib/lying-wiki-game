@@ -5,6 +5,7 @@ mod state;
 use std::sync::Arc;
 use axum::{Router, routing::{get, post}};
 use tower_http::cors::{Any, CorsLayer};
+use tower_http::services::{ServeDir, ServeFile};
 
 pub use state::AppState;
 
@@ -26,7 +27,8 @@ async fn main() {
         .route("/rooms/:code/events", get(handlers::sse::sse_handler))
         .route("/wiki/random", get(handlers::wiki::random_article))
         .layer(cors)
-        .with_state(state);
+        .with_state(state)
+        .fallback_service(ServeDir::new("static").fallback(ServeFile::new("static/index.html")));
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3001").await.unwrap();
     tracing::info!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
