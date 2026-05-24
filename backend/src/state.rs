@@ -18,7 +18,10 @@ impl AppState {
     pub fn new() -> Self {
         Self {
             rooms: DashMap::new(),
-            http: reqwest::Client::new(),
+            http: reqwest::Client::builder()
+                .user_agent("lying-wiki-game/0.1 (https://github.com/mtib/lying-wiki-game)")
+                .build()
+                .expect("failed to build http client"),
         }
     }
 }
