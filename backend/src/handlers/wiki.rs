@@ -51,7 +51,13 @@ pub async fn random_article(
 
     // PCS sets display:none on non-lead sections; scripts that would un-hide them
     // don't run in our sandboxed iframe, so strip it here.
-    let html = raw_html.replace(" style=\"display: none;\"", "");
+    let html = raw_html
+        .replace(" style=\"display: none;\"", "")
+        // PCS lazy-loads images via data-src/data-srcset; rewrite to real attributes
+        // so they load without the PCS JavaScript.
+        .replace(" data-src=\"", " src=\"")
+        .replace(" data-srcset=\"", " srcset=\"")
+        .replace(" class=\"mw-file-element pcs-lazy-load-placeholder\"", " class=\"mw-file-element\"");
 
     Ok(Json(WikiArticle { title, url, extract, html }))
 }

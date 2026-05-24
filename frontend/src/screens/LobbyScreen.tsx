@@ -9,9 +9,10 @@ interface Props {
   token: string
   myName: string
   onError: (msg: string) => void
+  onLeave: () => void
 }
 
-export function LobbyScreen({ room, token, myName, onError }: Props) {
+export function LobbyScreen({ room, token, myName, onError, onLeave }: Props) {
   const [loading, setLoading] = useState(false)
   const [showQR, setShowQR] = useState(false)
 
@@ -77,6 +78,13 @@ export function LobbyScreen({ room, token, myName, onError }: Props) {
         {room.players.length < 3
           ? `Need ${3 - room.players.length} more player(s)`
           : 'Start Game'}
+      </button>
+
+      <button
+        className="text-slate-500 text-sm underline w-full text-center"
+        onClick={onLeave}
+      >
+        Leave room
       </button>
 
       <ScoreDrawer room={room} />

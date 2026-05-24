@@ -8,9 +8,10 @@ interface Props {
   token: string
   myName: string
   onError: (msg: string) => void
+  onLeave: () => void
 }
 
-export function RoundActiveScreen({ room, token, myName, onError }: Props) {
+export function RoundActiveScreen({ room, token, myName, onError, onLeave: _onLeave }: Props) {
   const [loading, setLoading] = useState(false)
   const isGuesser = room.guesser_name === myName
 
