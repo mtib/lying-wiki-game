@@ -23,17 +23,19 @@ pub async fn sse_handler(
     Path(code): Path<String>,
     Query(query): Query<SseQuery>,
 ) -> impl IntoResponse {
-    let entry = match state.rooms.get(&code) {
-        Some(e) => e,
+    let (room_arc, tx) = match state.rooms.get(&code)
+        .map(|e| (e.room.clone(), e.tx.clone()))
+    {
+        Some(pair) => pair,
         None => return Err(StatusCode::NOT_FOUND),
     };
 
     // Subscribe before broadcasting so we don't miss the initial snapshot.
-    let rx = entry.tx.subscribe();
+    let rx = tx.subscribe();
 
     // Mark player connected and send initial snapshot.
     {
-        let mut room = entry.room.lock().await;
+        let mut room = room_arc.lock().await;
         match room.find_player_by_token_mut(&query.token) {
             Some(player) => player.connected = true,
             None => return Err(StatusCode::UNAUTHORIZED),
@@ -41,7 +43,7 @@ pub async fn sse_handler(
         // Broadcast full state so all clients (including this one via the stream above) get it.
         let snapshot = room.to_snapshot();
         let msg = json!({"type": "room_state", "data": snapshot}).to_string();
-        let _ = entry.tx.send(msg);
+        let _ = tx.send(msg);
     }
 
     let stream = BroadcastStream::new(rx).filter_map(|msg| {

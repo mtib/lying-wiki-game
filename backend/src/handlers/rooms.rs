@@ -12,10 +12,10 @@ use serde_json::json;
 use std::sync::Arc;
 use tokio::sync::{broadcast, Mutex};
 
-fn broadcast_snapshot(entry: &crate::state::RoomEntry, room: &crate::state::Room) {
+fn broadcast(tx: &tokio::sync::broadcast::Sender<String>, room: &crate::state::Room) {
     let snapshot = room.to_snapshot();
     let msg = json!({"type": "room_state", "data": snapshot}).to_string();
-    let _ = entry.tx.send(msg);
+    let _ = tx.send(msg);
 }
 
 // ── Create room ──────────────────────────────────────────────────────────────
@@ -76,17 +76,16 @@ pub async fn join_room(
     Path(code): Path<String>,
     Json(body): Json<JoinRoomRequest>,
 ) -> Result<Json<JoinRoomResponse>, AppError> {
-    let entry = state
-        .rooms
-        .get(&code)
+    let (room_arc, tx) = state.rooms.get(&code)
+        .map(|e| (e.room.clone(), e.tx.clone()))
         .ok_or_else(|| AppError::NotFound("room not found".into()))?;
-    let mut room = entry.room.lock().await;
+    let mut room = room_arc.lock().await;
 
     // Reconnect if token provided and matches an existing player.
     if let Some(ref t) = body.token {
         if let Some(player) = room.find_player_by_token_mut(t) {
             player.connected = true;
-            broadcast_snapshot(&entry, &room);
+            broadcast(&tx, &room);
             return Ok(Json(JoinRoomResponse { token: t.clone() }));
         }
     }
@@ -95,10 +94,10 @@ pub async fn join_room(
     if name.is_empty() {
         return Err(AppError::BadRequest("name cannot be empty".into()));
     }
-    let token = generate_token();
-    room.add_player(name, token.clone())?;
-    broadcast_snapshot(&entry, &room);
-    Ok(Json(JoinRoomResponse { token }))
+    let token_new = generate_token();
+    room.add_player(name, token_new.clone())?;
+    broadcast(&tx, &room);
+    Ok(Json(JoinRoomResponse { token: token_new }))
 }
 
 // ── Start game ───────────────────────────────────────────────────────────────
@@ -113,13 +112,12 @@ pub async fn start_game(
     Path(code): Path<String>,
     Json(body): Json<TokenRequest>,
 ) -> Result<StatusCode, AppError> {
-    let entry = state
-        .rooms
-        .get(&code)
+    let (room_arc, tx) = state.rooms.get(&code)
+        .map(|e| (e.room.clone(), e.tx.clone()))
         .ok_or_else(|| AppError::NotFound("room not found".into()))?;
-    let mut room = entry.room.lock().await;
+    let mut room = room_arc.lock().await;
     room.start_game(&body.token)?;
-    broadcast_snapshot(&entry, &room);
+    broadcast(&tx, &room);
     Ok(StatusCode::OK)
 }
 
@@ -136,13 +134,12 @@ pub async fn submit_topic(
     Path(code): Path<String>,
     Json(body): Json<SubmitTopicRequest>,
 ) -> Result<StatusCode, AppError> {
-    let entry = state
-        .rooms
-        .get(&code)
+    let (room_arc, tx) = state.rooms.get(&code)
+        .map(|e| (e.room.clone(), e.tx.clone()))
         .ok_or_else(|| AppError::NotFound("room not found".into()))?;
-    let mut room = entry.room.lock().await;
+    let mut room = room_arc.lock().await;
     room.submit_topic(&body.token, body.title)?;
-    broadcast_snapshot(&entry, &room);
+    broadcast(&tx, &room);
     Ok(StatusCode::OK)
 }
 
@@ -153,16 +150,13 @@ pub async fn start_round(
     Path(code): Path<String>,
     Json(body): Json<TokenRequest>,
 ) -> Result<StatusCode, AppError> {
-    let entry = state
-        .rooms
-        .get(&code)
+    let (room_arc, tx) = state.rooms.get(&code)
+        .map(|e| (e.room.clone(), e.tx.clone()))
         .ok_or_else(|| AppError::NotFound("room not found".into()))?;
-    let room_arc = entry.room.clone();
-    let tx = entry.tx.clone();
     {
         let mut room = room_arc.lock().await;
         room.begin_countdown(&body.token)?;
-        broadcast_snapshot(&entry, &room);
+        broadcast(&tx, &room);
     }
     // Transition to RoundActive after 3 seconds.
     tokio::spawn(async move {
@@ -189,12 +183,11 @@ pub async fn submit_guess(
     Path(code): Path<String>,
     Json(body): Json<GuessRequest>,
 ) -> Result<StatusCode, AppError> {
-    let entry = state
-        .rooms
-        .get(&code)
+    let (room_arc, tx) = state.rooms.get(&code)
+        .map(|e| (e.room.clone(), e.tx.clone()))
         .ok_or_else(|| AppError::NotFound("room not found".into()))?;
-    let mut room = entry.room.lock().await;
+    let mut room = room_arc.lock().await;
     room.submit_guess(&body.token, &body.guessed_name)?;
-    broadcast_snapshot(&entry, &room);
+    broadcast(&tx, &room);
     Ok(StatusCode::OK)
 }

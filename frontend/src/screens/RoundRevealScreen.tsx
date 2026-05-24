@@ -15,7 +15,8 @@ export function RoundRevealScreen({ room, token, myName, onError }: Props) {
   const [title, setTitle] = useState('')
   const [showWiki, setShowWiki] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const reveal = room.reveal!
+  if (!room.reveal) return null
+  const reveal = room.reveal
   const isOwner = reveal.owner_name === myName
 
   const handleSubmit = async () => {
