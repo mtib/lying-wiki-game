@@ -1,0 +1,14 @@
+/Users/mtib/Code/lying-wiki-game/.worktrees/feat-implement/backend/target/debug/deps/serde-fd46c51852807559.d: /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/mtib/Code/lying-wiki-game/.worktrees/feat-implement/backend/target/debug/build/serde-2beb76a2a4a45d11/out/private.rs
+
+/Users/mtib/Code/lying-wiki-game/.worktrees/feat-implement/backend/target/debug/deps/libserde-fd46c51852807559.rlib: /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/mtib/Code/lying-wiki-game/.worktrees/feat-implement/backend/target/debug/build/serde-2beb76a2a4a45d11/out/private.rs
+
+/Users/mtib/Code/lying-wiki-game/.worktrees/feat-implement/backend/target/debug/deps/libserde-fd46c51852807559.rmeta: /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/mtib/Code/lying-wiki-game/.worktrees/feat-implement/backend/target/debug/build/serde-2beb76a2a4a45d11/out/private.rs
+
+/Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/Users/mtib/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/Users/mtib/Code/lying-wiki-game/.worktrees/feat-implement/backend/target/debug/build/serde-2beb76a2a4a45d11/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/mtib/Code/lying-wiki-game/.worktrees/feat-implement/backend/target/debug/build/serde-2beb76a2a4a45d11/out
