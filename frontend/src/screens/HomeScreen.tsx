@@ -8,8 +8,9 @@ interface Props {
 
 export function HomeScreen({ onJoined }: Props) {
   const [name, setName] = useState('')
-  const [code, setCode] = useState('')
-  const [mode, setMode] = useState<'home' | 'join'>('home')
+  const prefilledCode = new URLSearchParams(window.location.search).get('join') ?? ''
+  const [code, setCode] = useState(prefilledCode.toUpperCase().slice(0, 6))
+  const [mode, setMode] = useState<'home' | 'join'>(prefilledCode ? 'join' : 'home')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 

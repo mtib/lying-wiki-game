@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { QRCodeSVG } from 'qrcode.react'
 import type { RoomSnapshot } from '../types'
 import { startGame } from '../api'
 import { ScoreDrawer } from '../components/ScoreDrawer'
@@ -12,6 +13,7 @@ interface Props {
 
 export function LobbyScreen({ room, token, myName, onError }: Props) {
   const [loading, setLoading] = useState(false)
+  const [showQR, setShowQR] = useState(false)
 
   const handleStart = async () => {
     setLoading(true)
@@ -24,12 +26,32 @@ export function LobbyScreen({ room, token, myName, onError }: Props) {
     }
   }
 
+  const joinUrl = `${window.location.origin}?join=${room.code}`
+
   return (
     <div className="min-h-full flex flex-col px-6 py-8 gap-6">
+      {showQR && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 gap-6"
+          onClick={() => setShowQR(false)}
+        >
+          <div className="bg-white p-6 rounded-2xl" onClick={(e) => e.stopPropagation()}>
+            <QRCodeSVG value={joinUrl} size={240} />
+          </div>
+          <p className="text-white text-sm font-mono tracking-widest">{room.code}</p>
+          <p className="text-slate-400 text-xs">Tap outside to close</p>
+        </div>
+      )}
+
       <div className="text-center">
         <p className="text-slate-400 text-sm mb-1">Room code</p>
         <p className="text-5xl font-bold tracking-widest text-white">{room.code}</p>
-        <p className="text-slate-500 text-xs mt-2">Share this with your friends</p>
+        <button
+          className="mt-2 text-slate-400 text-xs underline"
+          onClick={() => setShowQR(true)}
+        >
+          Show QR code
+        </button>
       </div>
 
       <div className="flex-1 space-y-2">
