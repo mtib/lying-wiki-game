@@ -27,7 +27,7 @@ async fn main() {
     let static_service = ServeDir::new("static")
         .fallback(ServeFile::new("static/index.html"));
 
-    let app = Router::new()
+    let api = Router::new()
         .route("/rooms", post(handlers::rooms::create_room))
         .route("/rooms/:code/join", post(handlers::rooms::join_room))
         .route("/rooms/:code/start-game", post(handlers::rooms::start_game))
@@ -36,6 +36,11 @@ async fn main() {
         .route("/rooms/:code/guess", post(handlers::rooms::submit_guess))
         .route("/rooms/:code/events", get(handlers::sse::sse_handler))
         .route("/wiki/random", get(handlers::wiki::random_article))
+        .layer(cors)
+        .with_state(state);
+
+    let app = Router::new()
+        .nest("/api", api)
         .nest_service(
             "/assets",
             tower::ServiceBuilder::new()
@@ -45,8 +50,6 @@ async fn main() {
                 ))
                 .service(assets_service),
         )
-        .layer(cors)
-        .with_state(state)
         .fallback_service(
             tower::ServiceBuilder::new()
                 .layer(SetResponseHeaderLayer::if_not_present(
