@@ -28,6 +28,9 @@ pub async fn sse_handler(
         None => return Err(StatusCode::NOT_FOUND),
     };
 
+    // Subscribe before broadcasting so we don't miss the initial snapshot.
+    let rx = entry.tx.subscribe();
+
     // Mark player connected and send initial snapshot.
     {
         let mut room = entry.room.lock().await;
@@ -35,14 +38,11 @@ pub async fn sse_handler(
             Some(player) => player.connected = true,
             None => return Err(StatusCode::UNAUTHORIZED),
         }
-        // Broadcast full state so all clients (including this one via the stream below) get it.
+        // Broadcast full state so all clients (including this one via the stream above) get it.
         let snapshot = room.to_snapshot();
         let msg = json!({"type": "room_state", "data": snapshot}).to_string();
         let _ = entry.tx.send(msg);
     }
-
-    // Subscribe to future broadcasts.
-    let rx = entry.tx.subscribe();
 
     let stream = BroadcastStream::new(rx).filter_map(|msg| {
         let msg = msg.ok()?;
