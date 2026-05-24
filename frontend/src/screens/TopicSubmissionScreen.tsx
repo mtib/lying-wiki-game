@@ -9,9 +9,10 @@ interface Props {
   token: string
   myName: string
   onError: (msg: string) => void
+  onLeave: () => void
 }
 
-export function TopicSubmissionScreen({ room, token, myName, onError }: Props) {
+export function TopicSubmissionScreen({ room, token, myName, onError, onLeave: _onLeave }: Props) {
   const [title, setTitle] = useState('')
   const [showWiki, setShowWiki] = useState(false)
   const [submitting, setSubmitting] = useState(false)

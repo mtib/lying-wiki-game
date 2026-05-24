@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useRoom } from './hooks/useRoom'
-import { loadDeviceToken, saveDeviceToken } from './hooks/useDeviceToken'
+import { loadDeviceToken, saveDeviceToken, clearDeviceToken } from './hooks/useDeviceToken'
 import { Toast } from './components/Toast'
 import { HomeScreen } from './screens/HomeScreen'
 import { LobbyScreen } from './screens/LobbyScreen'
@@ -30,6 +30,12 @@ export default function App() {
     setSession({ code, token, name })
   }
 
+  const onLeave = () => {
+    if (session) clearDeviceToken(session.code)
+    localStorage.removeItem('lwg-last-code')
+    setSession(null)
+  }
+
   if (!session) {
     return (
       <div className="min-h-full">
@@ -40,13 +46,14 @@ export default function App() {
 
   if (!room) {
     return (
-      <div className="min-h-full flex items-center justify-center text-slate-400">
-        Connecting…
+      <div className="min-h-full flex items-center justify-center text-slate-400 flex-col gap-4">
+        <span>Connecting…</span>
+        <button onClick={onLeave} className="text-slate-500 text-sm underline">Leave room</button>
       </div>
     )
   }
 
-  const props = { room, token: session.token, myName: session.name, onError }
+  const props = { room, token: session.token, myName: session.name, onError, onLeave }
 
   return (
     <div className="min-h-full">
